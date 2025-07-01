@@ -1,1 +1,3 @@
 rootProject.name = 'security-gateway'
+include 'api-server'
+include 'security-gateway-server'
