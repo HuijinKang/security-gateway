@@ -29,6 +29,11 @@ spring:
     virtual:
       enabled: true
 
+  jwt:
+    secret: 8yuoweLFVFc1sBbByptPY4x1ooleo6Uk
+    token:
+      access_expiration: 7200000
+
 logging:
   level:
     root: INFO

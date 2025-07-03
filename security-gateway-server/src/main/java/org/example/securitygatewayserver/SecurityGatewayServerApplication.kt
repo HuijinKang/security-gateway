@@ -1,13 +1,11 @@
-package org.example.securitygatewayserver;
+package org.example.securitygatewayserver
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
 @SpringBootApplication
-public class SecurityGatewayServerApplication {
+open class SecurityGatewayServerApplication
 
-    public static void main(String[] args) {
-        SpringApplication.run(SecurityGatewayServerApplication.class, args);
-    }
-
+fun main(args: Array<String>) {
+    runApplication<SecurityGatewayServerApplication>(*args)
 }

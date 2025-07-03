@@ -1,53 +1,33 @@
-package org.example.securitygatewayserver.domain.service;
+package org.example.securitygatewayserver.domain.service
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
-import org.example.securitygatewayserver.domain.dto.LoginResponse;
-import org.example.securitygatewayserver.presentation.dto.LoginRequest;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.stereotype.Service;
+import org.example.securitygatewayserver.domain.dto.LoginResponse
+import org.example.securitygatewayserver.domain.entity.RoleType
+import org.example.securitygatewayserver.infrastructure.repository.UserRepository
+import org.example.securitygatewayserver.jwt.JwtProvider
+import org.example.securitygatewayserver.presentation.dto.LoginRequest
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.stereotype.Service
 
 @Service
-@RequiredArgsConstructor
-public class AuthService {
+class AuthService(
+    private val userRepository: UserRepository,
+    private val jwtProvider: JwtProvider,
+    private val authenticationManager: AuthenticationManager,
+) {
 
-    private final AuthenticationManager authenticationManager;
+    fun login(request: LoginRequest): LoginResponse {
+        val authToken = UsernamePasswordAuthenticationToken(request.username, request.password)
+        val auth = authenticationManager.authenticate(authToken)
 
-    public LoginResponse login(LoginRequest request, HttpServletRequest httpRequest) {
-        UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(request.username(), request.password());
-        Authentication auth = authenticationManager.authenticate(authToken);
+        val username = auth.name
 
-        // 인증 정보 설정
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        val user = userRepository.findByUsername(username)
+            ?: throw UsernameNotFoundException("User $username not found")
 
-        // 세션에 보안 컨텍스트 저장
-        HttpSession session = httpRequest.getSession();
-        session.setAttribute(
-                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                SecurityContextHolder.getContext()
-        );
+        val token = jwtProvider.createToken(user, RoleType.USER)
 
-        // 사용자 정보 추출
-        Object principal = auth.getPrincipal();
-        String username = "";
-        String role = "";
-
-        if (principal instanceof UserDetails userDetails) {
-            username = userDetails.getUsername();
-            role = userDetails.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .findFirst()
-                    .orElse("UNKNOWN");
-        }
-
-        return new LoginResponse(username, role);
+        return LoginResponse(token)
     }
 }

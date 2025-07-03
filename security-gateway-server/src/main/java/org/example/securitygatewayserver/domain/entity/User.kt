@@ -1,28 +1,26 @@
-package org.example.securitygatewayserver.domain.entity;
+package org.example.securitygatewayserver.domain.entity
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "user")
-@Getter
-@NoArgsConstructor
-public class User {
+class User(
+
+    val username: String,
+
+    val password: String,
+
+    @Enumerated(EnumType.STRING)
+    val role: RoleType,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String username;
-
-    private String password;
-
-    private String role;
-
-    public User(String username, String password, String role) {
-        this.username = username;
-        this.password = password;
-        this.role = role;
-    }
+    val id: Long? = null
+) {
 }

@@ -1,3 +1,6 @@
-package org.example.securitygatewayserver.presentation.dto;
+package org.example.securitygatewayserver.presentation.dto
 
-public record LoginRequest(String username, String password) {}
+data class LoginRequest(
+    val username: String,
+    val password: String
+)

@@ -1,28 +1,25 @@
-package org.example.securitygatewayserver.domain.service;
+package org.example.securitygatewayserver.domain.service
 
-import lombok.RequiredArgsConstructor;
-import org.example.securitygatewayserver.domain.entity.User;
-import org.example.securitygatewayserver.infrastructure.repository.UserRepository;
-import org.example.securitygatewayserver.presentation.dto.SignUpRequest;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import org.example.securitygatewayserver.domain.entity.RoleType
+import org.example.securitygatewayserver.domain.entity.User
+import org.example.securitygatewayserver.infrastructure.repository.UserRepository
+import org.example.securitygatewayserver.presentation.dto.SignUpRequest
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.stereotype.Service
 
 @Service
-@RequiredArgsConstructor
-public class UserService {
+class UserService(
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder,
+){
+    fun register(request: SignUpRequest) {
+        val encodedPassword = passwordEncoder.encode(request.password)
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+        val user = User(
+            request.username,
+            encodedPassword,
+            RoleType.USER)
 
-    public void register(SignUpRequest request) {
-        String encodedPassword = passwordEncoder.encode(request.password());
-
-        User user = new User(
-                request.username(),
-                encodedPassword,
-                "ROLE_ADMIN"
-        );
-
-        userRepository.save(user);
+        userRepository.save(user)
     }
 }

@@ -1,4 +1,6 @@
-package org.example.securitygatewayserver.domain.dto;
+package org.example.securitygatewayserver.domain.dto
 
-public record LoginResponse(String username, String role) { }
-
+class LoginResponse(
+    val accessToken: String,
+) {
+}
